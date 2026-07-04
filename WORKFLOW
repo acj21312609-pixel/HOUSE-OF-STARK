@@ -74,6 +74,7 @@
                                    │
                                    ▼
                                   END
+SIMPLIFIED WORKFLOW:
 
 Start
    │
