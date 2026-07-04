@@ -1,0 +1,273 @@
+* `index.html` (Landing Page)
+* `message.html` (Message Entry)
+* `decipher.html` (Loading Animation)
+* `result.html` (Result Page)
+* `style.css` (700–1000+ lines)
+* `script.js` (300–500+ lines)
+* `caesar.js` (Cipher logic)
+* Assets (direwolf logo, snow particles, audio, icons, PDFs, etc.)
+
+This is well beyond the maximum response size.
+
+### I can build the **exact website** with:
+
+✅ Game of Thrones / House Stark theme
+
+✅ Animated Direwolf intro
+
+✅ Snow particle background
+
+✅ Parchment UI
+
+✅ Raven flying transitions
+
+✅ Caesar Cipher implementation
+
+✅ Shift key input
+
+✅ Decoding animation
+
+✅ Result on scroll
+
+✅ Copy button
+
+✅ Download as PDF
+
+✅ Session history (last 5 messages)
+
+✅ Messages deciphered counter
+
+✅ Dark Mode ("Beyond the Wall")
+
+✅ Responsive mobile design
+
+✅ Ambient music toggle
+
+✅ Professional CSS animations
+
+---
+
+### The best way is to generate it in parts.
+
+I'll provide:
+
+1. **Part 1**
+
+   * Landing Page
+   * CSS
+   * Animations
+
+2. **Part 2**
+
+   * Message Entry Page
+   * Caesar Cipher Logic
+
+3. **Part 3**
+
+   * Decoding Animation Page
+
+4. **Part 4**
+
+   * Result Page
+   * Download PDF
+   * Copy
+   * Share
+
+5. **Part 5**
+
+   * Session History
+   * Dark Mode
+   * Music
+   * Final polish
+
+The final project will be around **1,500–2,000 lines of HTML/CSS/JavaScript** and will look like a polished fantasy-themed application.
+
+It will closely match the workflow you shared:
+
+```
+Landing
+   ↓
+Message Entry
+   ↓
+Validation
+   ↓
+Decipher Animation
+   ↓
+Caesar Cipher
+   ↓
+Result
+   ↓
+History
+   ↓
+Return to Winterfell
+```
+
+
+colors:
+For a **House Stark / Game of Thrones** aesthetic, use a palette that feels cold, medieval, and elegant rather than bright. Here are some colors that work well together:
+
+## Primary Color Palette
+
+| Purpose              | Color          | Hex Code    |
+| -------------------- | -------------- | ----------- |
+| Background           | Midnight Black | **#0F1115** |
+| Secondary Background | Charcoal Grey  | **#1B1F24** |
+| Cards / Panels       | Slate Grey     | **#2B3138** |
+| Primary Text         | Snow White     | **#F5F7FA** |
+| Secondary Text       | Frost Grey     | **#B8C2CC** |
+| Accent               | Ice Blue       | **#7FB7D8** |
+| Highlight            | Steel Blue     | **#5A8FB5** |
+| Borders              | Silver Grey    | **#7A8794** |
+| Button Hover         | Frozen Cyan    | **#A7D8F0** |
+
+---
+
+## Parchment Theme
+
+| Element           | Hex         |
+| ----------------- | ----------- |
+| Scroll Background | **#E8DCC4** |
+| Aged Paper        | **#D8C8A8** |
+| Ink Color         | **#3B2F2F** |
+| Wax Seal          | **#7B1E28** |
+
+---
+
+## House Stark Theme
+
+* ❄ Ice Blue → `#7FB7D8`
+* ⚔ Steel Grey → `#5B6670`
+* 🐺 Direwolf Silver → `#C8D0D8`
+* 🌑 Night Black → `#0F1115`
+* 🌨 Snow White → `#F5F7FA`
+
+---
+
+## Button Colors
+
+**Primary Button**
+
+* Background: `#7FB7D8`
+* Text: `#0F1115`
+
+Hover
+
+* Background: `#A7D8F0`
+* Glow:
+
+```css
+box-shadow: 0 0 20px rgba(127,183,216,.7);
+```
+
+---
+
+## Dark Mode ("Beyond the Wall")
+
+Background
+
+```text
+#050608
+```
+
+Cards
+
+```text
+#15181D
+```
+
+Text
+
+```text
+#F3F5F7
+```
+
+Accent
+
+```text
+#89CFF0
+```
+
+Glow
+
+```text
+#BFE9FF
+```
+
+---
+
+## Gradient Ideas
+
+### Landing Page
+
+```css
+background: linear-gradient(
+135deg,
+#0F1115 0%,
+#1B1F24 45%,
+#2B3138 100%
+);
+```
+
+---
+
+### Hero Section
+
+```css
+background: linear-gradient(
+to bottom,
+#0F1115,
+#23313F,
+#7FB7D8
+);
+```
+
+---
+
+### Buttons
+
+```css
+background: linear-gradient(
+135deg,
+#5A8FB5,
+#7FB7D8
+);
+```
+
+---
+
+### Result Page
+
+```css
+background: linear-gradient(
+180deg,
+#E8DCC4,
+#D8C8A8
+);
+```
+
+---
+
+## Typography Colors
+
+* Headings: **#F5F7FA**
+* Body text: **#D9E2EC**
+* Links: **#7FB7D8**
+* Hover links: **#A7D8F0**
+* Error: **#D9534F**
+* Success: **#78C878**
+* Warning: **#D8B24C**
+
+---
+
+## Overall Visual Style
+
+Think of the website as **Winterfell at night**:
+
+* 🌌 Dark charcoal and black backgrounds
+* ❄ Icy blue glowing highlights
+* 📜 Warm parchment panels for messages and results
+* ⚔ Silver borders and medieval accents
+* 🐺 Subtle snow particle animations
+* 🔥 Soft candlelight or torch glows for warmth
+
+This combination creates a cinematic House Stark atmosphere while keeping the interface clean, readable, and visually striking.
