@@ -1,92 +1,90 @@
-                              ┌───────────────────────┐
-                              │      START            │
-                              └──────────┬────────────┘
-                                         │
-                                         ▼
-                        ┌────────────────────────────────┐
-                        │        LANDING PAGE            │
-                        │ • Direwolf Animation           │
-                        │ • Winter Theme                 │
-                        │ • Music Toggle                │
-                        │ • Begin Deciphering Button     │
-                        └──────────┬─────────────────────┘
-                                   │
-                                   ▼
-                    ┌────────────────────────────────────┐
-                    │      MESSAGE ENTRY PAGE            │
-                    │ • Enter Encrypted Message          │
-                    │ • Select Cipher Type               │
-                    │ • Enter Caesar Shift Key           │
-                    │ • Send to Maester Button           │
-                    └──────────┬─────────────────────────┘
-                               │
-                               ▼
-                  ┌──────────────────────────────────────┐
-                  │       INPUT VALIDATION               │
-                  │ Message Empty?                       │
-                  └──────────┬───────────────┬───────────┘
-                             │Yes            │No
-                             ▼               ▼
-                 ┌──────────────────┐   ┌───────────────────────┐
-                 │ Show Error        │   │ DECIPHERING PAGE      │
-                 │ "Enter Message"   │   │ • Raven Animation     │
-                 └─────────┬─────────┘   │ • Progress Bar        │
-                           │             │ • Processing Effects  │
-                           └────────────►└──────────┬────────────┘
-                                                    │
-                                                    ▼
-                           ┌────────────────────────────────────┐
-                           │      CAESAR CIPHER ALGORITHM       │
-                           │ • Read Shift Key                   │
-                           │ • Shift Characters                 │
-                           │ • Generate Plain Text              │
-                           └──────────┬─────────────────────────┘
-                                      │
-                                      ▼
-                      ┌──────────────────────────────────────┐
-                      │          RESULT PAGE                 │
-                      │ • Display Deciphered Message         │
-                      │ • Copy Result                        │
-                      │ • Download Scroll (PDF/Image)        │
-                      │ • Share Message                      │
-                      │ • Random Stark Quote                 │
-                      └──────────┬───────────────────────────┘
-                                 │
-                                 ▼
-                     ┌───────────────────────────────────────┐
-                     │ SESSION HISTORY                       │
-                     │ • Save Last 5 Messages                │
-                     │ • Update Message Counter              │
-                     └──────────┬────────────────────────────┘
+                             START
                                 │
                                 ▼
-                   ┌────────────────────────────────────────┐
-                   │ Return to Winterfell Button            │
-                   └──────────┬─────────────────────────────┘
-                              │
-                              ▼
-                 ┌─────────────────────────────────────┐
-                 │ Go Back to Landing Page             │
-                 │ (Repeat Deciphering Process)        │
-                 └──────────┬──────────────────────────┘
-                            │
-                            ▼
-                      ┌──────────────┐
-                      │     END      │
-                      └──────────────┘
-
-Simplified workflow :
+                  ┌──────────────────────────────┐
+                  │   Letter for Jon Snow        │
+                  │ • Click Envelope             │
+                  │ • Read Maester's Letter      │
+                  │ • Continue                   │
+                  └──────────────┬───────────────┘
+                                 │
+                                 ▼
+                  ┌──────────────────────────────┐
+                  │        LANDING PAGE          │
+                  │ • Direwolf Animation         │
+                  │ • Winter Theme               │
+                  │ • Music Toggle               │
+                  │ • Begin Deciphering Button   │
+                  └──────────────┬───────────────┘
+                                 │
+                                 ▼
+                  ┌──────────────────────────────┐
+                  │      MESSAGE ENTRY PAGE      │
+                  │ • Enter Encrypted Message    │
+                  │ • Send to Maester Button     │
+                  └──────────────┬───────────────┘
+                                 │
+                                 ▼
+                  ┌──────────────────────────────┐
+                  │      INPUT VALIDATION        │
+                  │ Message Empty?               │
+                  └─────────┬───────────┬────────┘
+                            │Yes        │No
+                            ▼           ▼
+                ┌─────────────────┐   ┌──────────────────────────┐
+                │ Show Error       │   │   DECIPHERING PAGE       │
+                │ "Enter Message"  │   │ • Raven Animation        │
+                └────────┬─────────┘   │ • Progress Bar           │
+                         │             │ • Processing Effects     │
+                         └────────────►└──────────┬───────────────┘
+                                                 │
+                                                 ▼
+                    ┌───────────────────────────────────────────┐
+                    │        DECIPHERING PROCESS                │
+                    │ • Decode Encrypted Message                │
+                    │ • Generate Plain Text                     │
+                    └──────────────┬────────────────────────────┘
+                                   │
+                                   ▼
+                    ┌───────────────────────────────────────────┐
+                    │            RESULT PAGE                    │
+                    │ • Display Deciphered Message              │
+                    │ • Copy Result                             │
+                    │ • Download Scroll                         │
+                    │ • Share Message                           │
+                    └──────────────┬────────────────────────────┘
+                                   │
+                                   ▼
+                    ┌───────────────────────────────────────────┐
+                    │          SESSION HISTORY                  │
+                    │ • Save Recent Messages                    │
+                    │ • View Ravens Received                    │
+                    └──────────────┬────────────────────────────┘
+                                   │
+                                   ▼
+                    ┌───────────────────────────────────────────┐
+                    │      Return to Winterfell Button          │
+                    └──────────────┬────────────────────────────┘
+                                   │
+                                   ▼
+                    ┌───────────────────────────────────────────┐
+                    │        Return to Landing Page             │
+                    │        (Repeat Process)                   │
+                    └──────────────┬────────────────────────────┘
+                                   │
+                                   ▼
+                                  END
 
 Start
+   │
+   ▼
+Letter for Jon Snow
    │
    ▼
 Landing Page
    │
    ▼
 Enter Encrypted Message
-   │
-   ▼
-Select Caesar Cipher + Shift Key
    │
    ▼
 Validate Input
@@ -96,12 +94,14 @@ Validate Input
    └── Valid
           │
           ▼
-   Caesar Cipher Decoding
+   Decipher Message
           │
           ▼
-   Display Deciphered Result
+   Display Result
           │
-          ├── Copy / Download / Share
+          ├── Copy
+          ├── Download
+          ├── Share
           │
           ▼
    Save in Session History
