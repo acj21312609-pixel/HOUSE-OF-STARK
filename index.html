@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>House of Stark — Raven Cipher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Uncial+Antiqua&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#0F1115;
+    --bg-1:#1B1F24;
+    --bg-2:#2B3138;
+    --text-0:#F5F7FA;
+    --text-1:#B8C2CC;
+    --accent:#7FB7D8;
+    --accent-strong:#5A8FB5;
+    --border:#7A8794;
+    --hover:#A7D8F0;
+    --parch-0:#E8DCC4;
+    --parch-1:#D8C8A8;
+    --ink:#3B2F2F;
+    --wax:#7B1E28;
+    --error:#D9534F;
+    --success:#78C878;
+    --warning:#D8B24C;
+    --glow: rgba(127,183,216,.55);
+  }
+  body.wall{
+    --bg-0:#050608;
+    --bg-1:#0B0D10;
+    --bg-2:#15181D;
+    --text-0:#F3F5F7;
+    --accent:#89CFF0;
+    --glow: rgba(191,233,255,.6);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    font-family:'EB Garamond', serif;
+    background:var(--bg-0);
+    color:var(--text-0);
+    overflow-x:hidden;
+    min-height:100vh;
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"><g fill="%23C8D0D8" stroke="%230F1115" stroke-width="1"><circle cx="15" cy="19" r="6.2"/><circle cx="7" cy="9" r="3"/><circle cx="15" cy="5.5" r="3.1"/><circle cx="23" cy="9" r="3"/></g></svg>') 15 15, auto;
+  }
+  h1,h2,h3,.display{ font-family:'Cinzel', serif; letter-spacing:.04em; }
+  .wordmark{ font-family:'Cinzel', serif; font-weight:900; letter-spacing:.28em; }
+  .seal-font{ font-family:'Uncial Antiqua', serif; }
+
+  #snowCanvas{ position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:5; }
+
+  .corner-glow{ position:fixed; width:38vw; height:38vw; max-width:520px; max-height:520px; border-radius:50%;
+    background: radial-gradient(circle, rgba(216,178,76,.16), transparent 65%);
+    filter: blur(10px); pointer-events:none; z-index:1; animation: flicker 5.5s ease-in-out infinite; }
+  .corner-glow.tl{ top:-10%; left:-10%; animation-delay:0s;}
+  .corner-glow.br{ bottom:-10%; right:-10%; animation-delay:1.8s;}
+  @keyframes flicker{ 0%,100%{opacity:.55;} 30%{opacity:.85;} 45%{opacity:.4;} 60%{opacity:.75;} 80%{opacity:.5;} }
+
+  #app{ position:relative; z-index:10; min-height:100vh; }
+
+  .page{ display:none; min-height:100vh; flex-direction:column; align-items:center; justify-content:center;
+    padding:32px 20px 60px; position:relative; }
+  .page.active{ display:flex; }
+
+  /* Topbar */
+  .topbar{ position:fixed; top:0; left:0; right:0; z-index:40; display:flex; align-items:center; justify-content:space-between;
+    padding:14px 22px; background:linear-gradient(180deg, rgba(15,17,21,.85), transparent); }
+  body.wall .topbar{ background:linear-gradient(180deg, rgba(5,6,8,.9), transparent); }
+  .topbar.hidden{ display:none; }
+  .brand-mini{ display:flex; align-items:center; gap:10px; cursor:pointer; }
+  .brand-mini svg{ width:30px; height:30px; }
+  .brand-mini span{ font-size:.78rem; color:var(--text-0); }
+  .top-actions{ display:flex; align-items:center; gap:10px; }
+  .icon-btn{ background:var(--bg-2); border:1.5px solid var(--border); color:var(--text-0); border-radius:8px;
+    padding:7px 11px; font-size:.72rem; font-family:'EB Garamond',serif; letter-spacing:.03em; cursor:pointer; transition:.2s; }
+  .icon-btn:hover{ border-color:var(--accent); color:var(--accent); box-shadow:0 0 12px var(--glow); }
+
+  /* Landing */
+  #page-landing{ background: linear-gradient(135deg, var(--bg-0) 0%, var(--bg-1) 45%, var(--bg-2) 100%); text-align:center; }
+  .logo-wrap{ position:relative; margin-bottom:6px; }
+  .logo-glow{ position:absolute; inset:-40px; border-radius:50%;
+    background: radial-gradient(circle, var(--glow), transparent 70%);
+    animation: breathe 3.4s ease-in-out infinite; filter: blur(6px); z-index:-1; }
+  @keyframes breathe{ 0%,100%{ transform:scale(.85); opacity:.5;} 50%{ transform:scale(1.12); opacity:1;} }
+  .direwolf-svg{ width:min(30vw,190px); height:min(30vw,190px); filter: drop-shadow(0 0 14px var(--glow)); }
+  .wordmark-main{ font-size:clamp(1.6rem,5vw,2.6rem); margin:10px 0 4px; color:var(--text-0); }
+  .tagline{ color:var(--text-1); font-style:italic; font-size:clamp(1rem,2.4vw,1.25rem); margin:0 0 40px; }
+
+  .raven-bg{ position:absolute; opacity:.35; z-index:0; }
+
+  .wax-btn{ position:relative; border:none; cursor:pointer; font-family:'Cinzel',serif; letter-spacing:.06em;
+    background: linear-gradient(135deg, var(--accent-strong), var(--accent)); color:var(--bg-0);
+    padding:16px 40px; border-radius:50px; font-size:1rem; font-weight:600;
+    box-shadow: 0 0 0 3px rgba(122,135,148,.4), inset 0 -3px 6px rgba(0,0,0,.25); transition:.25s; }
+  .wax-btn:hover{ background: linear-gradient(135deg, var(--accent), var(--hover)); box-shadow:0 0 22px var(--glow), 0 0 0 3px rgba(122,135,148,.5); transform: translateY(-2px); }
+  .wax-btn:active{ transform: translateY(0px) scale(.98); }
+
+  .sound-toggle{ position:fixed; bottom:20px; left:20px; z-index:40; }
+
+  /* Message entry */
+  .parchment-panel{ background: linear-gradient(180deg, var(--parch-0), var(--parch-1)); color:var(--ink);
+    border-radius:6px; padding:34px; width:min(640px,92vw); position:relative;
+    box-shadow: 0 10px 40px rgba(0,0,0,.45);
+    clip-path: polygon(1% 3%, 6% 0%, 20% 1.5%, 40% 0%, 62% 1.2%, 82% 0%, 97% 2.5%, 100% 10%, 99% 30%, 100% 55%, 98.5% 78%, 100% 92%, 96% 100%, 78% 98.5%, 55% 100%, 33% 99%, 12% 100%, 2% 96%, 0% 80%, 1.5% 60%, 0% 38%, 1% 18%);
+    border: 2px solid rgba(59,47,47,.25); }
+  .parchment-panel h2{ color:var(--ink); text-align:center; margin-top:0; }
+  .info-tag{ font-size:.85rem; text-align:center; color:#5c4c3a; margin:6px 0 18px; font-style:italic; }
+  textarea#raven-input{ width:100%; min-height:180px; background: rgba(255,252,240,.35); border:1.5px dashed rgba(59,47,47,.4);
+    border-radius:4px; padding:16px; font-family:'EB Garamond',serif; font-size:1.05rem; color:var(--ink); resize:vertical; }
+  textarea#raven-input:focus{ outline:2px solid var(--accent-strong); }
+  .entry-actions{ display:flex; justify-content:center; margin-top:22px; }
+  .error-msg{ color:var(--error); text-align:center; font-size:.9rem; min-height:1.2em; margin-top:10px; }
+
+  /* Deciphering page */
+  #page-decipher{ background: linear-gradient(to bottom, var(--bg-0), #23313F, var(--accent-strong) 160%); overflow:hidden; width:100%; }
+  .sky-stage{ position:relative; width:min(760px,94vw); height:min(52vh,380px); margin:0 auto 26px; }
+  .bird{ position:absolute; opacity:0; }
+  .progress-outer{ width:min(700px,92vw); margin:0 auto; }
+  .progress-track{ position:relative; height:34px; border-radius:20px; border:2px solid var(--border);
+    background: repeating-linear-gradient(135deg, #1a1d22, #1a1d22 8px, #202429 8px, #202429 16px); overflow:hidden;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,.6); }
+  .progress-fill{ height:100%; width:0%; border-radius:20px; background: linear-gradient(90deg, var(--wax), #b1442f, var(--warning));
+    transition: width .35s linear; position:relative; box-shadow: 0 0 14px rgba(216,178,76,.5); }
+  .progress-fill::after{ content:''; position:absolute; right:0; top:0; bottom:0; width:24px;
+    background: radial-gradient(circle, rgba(255,225,150,.9), transparent 70%); filter: blur(3px); }
+  .progress-label{ text-align:center; margin-top:10px; font-family:'Cinzel',serif; letter-spacing:.05em; color:var(--text-0); }
+  .flavor-text{ text-align:center; min-height:1.6em; margin-top:14px; font-style:italic; color:var(--text-1); font-size:1.05rem; }
+
+  .dragon{ position:absolute; bottom:-6px; left:50%; transform:translateX(-50%) scale(.7); opacity:0; z-index:5; }
+  .dragon.show{ opacity:1; transform:translateX(-50%) scale(1); transition: opacity .8s ease, transform .8s ease; }
+  .fire-jet{ position:absolute; opacity:0; transform-origin:left center; }
+  .fire-jet.show{ opacity:1; animation: fireflick .25s ease-in-out infinite alternate; }
+  @keyframes fireflick{ from{ transform: scaleX(1) scaleY(1);} to{ transform: scaleX(1.08) scaleY(.94);} }
+
+  /* Result page */
+  #page-result{ background: linear-gradient(180deg, var(--parch-0), var(--parch-1)); color:var(--ink); width:100%; }
+  .scroll-wrap{ width:min(680px,94vw); position:relative; }
+  .scroll-panel{ background: linear-gradient(180deg,#f3ead4,#e6d8b8); border-radius:8px; padding:40px 34px 34px;
+    box-shadow: 0 14px 46px rgba(0,0,0,.35); border:2px solid rgba(59,47,47,.3); position:relative; }
+  .decoded-text{ font-size:1.25rem; line-height:1.7; white-space:pre-wrap; text-align:left; min-height:60px; }
+  .wax-stamp{ position:absolute; top:-26px; right:24px; width:78px; height:78px; border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #9c2c37, var(--wax) 70%); display:flex; align-items:center; justify-content:center;
+    color:#f3ead4; font-size:.62rem; text-align:center; font-family:'Cinzel',serif; letter-spacing:.03em; padding:6px;
+    box-shadow: 0 6px 14px rgba(0,0,0,.4), inset 0 0 0 3px rgba(0,0,0,.15); opacity:0; transform: scale(0) rotate(-25deg); }
+  .wax-stamp.show{ animation: stampIn .5s cubic-bezier(.2,1.4,.4,1) forwards; }
+  @keyframes stampIn{ to{ opacity:1; transform: scale(1) rotate(-12deg);} }
+  .flavor-line{ text-align:center; font-style:italic; margin-top:16px; color:#5c4c3a; }
+  .result-actions{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:24px; }
+  .parch-btn{ background: var(--bg-2); color:var(--text-0); border:1.5px solid var(--border); border-radius:8px;
+    padding:10px 18px; font-family:'Cinzel',serif; font-size:.78rem; letter-spacing:.04em; cursor:pointer; transition:.2s; }
+  .parch-btn:hover{ border-color:var(--accent); color:var(--accent); box-shadow:0 0 12px var(--glow); }
+  .return-btn{ margin-top:28px; }
+
+  /* History drawer */
+  .history-drawer{ position:fixed; top:0; right:-340px; width:320px; height:100%; background:var(--bg-1); border-left:2px solid var(--border);
+    z-index:60; transition: right .3s ease; padding:70px 20px 20px; overflow-y:auto; }
+  .history-drawer.open{ right:0; }
+  .history-drawer h3{ margin-top:0; font-size:1rem; }
+  .history-item{ background:var(--bg-2); border:1px solid var(--border); border-radius:6px; padding:10px 12px; margin-bottom:10px; font-size:.85rem; color:var(--text-1); }
+  .history-count{ font-size:.8rem; color:var(--text-1); margin-top:16px; text-align:center; }
+  .drawer-close{ position:absolute; top:16px; right:16px; }
+  .drawer-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:55; opacity:0; pointer-events:none; transition:.3s; }
+  .drawer-overlay.open{ opacity:1; pointer-events:auto; }
+
+  @media (max-width:520px){
+    .wax-stamp{ width:60px; height:60px; font-size:.5rem; top:-18px; right:14px;}
+    .decoded-text{ font-size:1.05rem; }
+    .direwolf-svg{ width:34vw; height:34vw; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="snowCanvas"></canvas>
+<div class="corner-glow tl"></div>
+<div class="corner-glow br"></div>
+
+<div class="topbar" id="topbar">
+  <div class="brand-mini" onclick="goTo('landing')">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <use href="#direwolfIcon"></use>
+    </svg>
+    <span class="wordmark">HOUSE OF STARK</span>
+  </div>
+  <div class="top-actions">
+    <button class="icon-btn" onclick="toggleHistory(true)">Ravens Received</button>
+    <button class="icon-btn" id="wallToggle" onclick="toggleWall()">Beyond the Wall Mode</button>
+  </div>
+</div>
+
+<!-- Reusable defs -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="direwolfIcon">
+      <polygon points="50,4 62,22 58,10" fill="#C8D0D8"/>
+      <polygon points="50,4 38,22 42,10" fill="#C8D0D8"/>
+      <path d="M50 8 L70 30 L82 24 L74 42 L88 50 L72 55 L78 74 L60 64 L58 88 L50 70 L42 88 L40 64 L22 74 L28 55 L12 50 L26 42 L18 24 L30 30 Z"
+            fill="none" stroke="#9AA6B0" stroke-width="2"/>
+      <path d="M50 20 C40 26 33 38 34 50 C35 62 41 72 50 78 C59 72 65 62 66 50 C67 38 60 26 50 20 Z"
+            fill="url(#wolfGrad)" stroke="#8B97A2" stroke-width="1.5"/>
+      <polygon points="41,44 46,50 40,52" fill="#0F1115"/>
+      <polygon points="59,44 54,50 60,52" fill="#0F1115"/>
+      <polygon points="50,54 46,62 54,62" fill="#0F1115"/>
+      <linearGradient id="wolfGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#E4EAF0"/>
+        <stop offset="55%" stop-color="#AEB9C2"/>
+        <stop offset="100%" stop-color="#707C87"/>
+      </linearGradient>
+    </g>
+
+    <g id="ravenIcon">
+      <path d="M50 30
+               C42 18, 20 10, 0 14
+               C16 18, 26 24, 32 32
+               L14 28 C22 34, 30 38, 36 40
+               L18 42 C28 46, 38 46, 44 44
+               C46 48, 48 52, 50 60
+               C52 52, 54 48, 56 44
+               C62 46, 72 46, 82 42
+               L64 40 C70 38, 78 34, 86 28
+               L68 32 C74 24, 84 18, 100 14
+               C80 10, 58 18, 50 30 Z"
+            fill="#05060a"/>
+    </g>
+
+    <g id="dragonIcon">
+      <path d="M150 90
+               C130 55, 90 30, 40 32
+               C70 40, 92 52, 104 68
+               L30 44 C58 62, 78 76, 96 84
+               L150 100
+               L204 84
+               C222 76, 242 62, 270 44
+               L196 68
+               C208 52, 230 40, 260 32
+               C210 30, 170 55, 150 90 Z"
+            fill="#1c2126" stroke="#3a4048" stroke-width="1.5"/>
+      <path d="M150 88 C140 96 136 112 140 128 C144 140 150 148 150 148 C150 148 156 140 160 128 C164 112 160 96 150 88 Z" fill="#23282e" stroke="#3a4048" stroke-width="1.5"/>
+      <path d="M150 40 C142 44 136 52 136 60 C136 66 140 70 144 72 L150 60 L156 72 C160 70 164 66 164 60 C164 52 158 44 150 40 Z" fill="#2a3038"/>
+      <circle cx="146" cy="56" r="2.4" fill="#D8B24C"/>
+      <circle cx="154" cy="56" r="2.4" fill="#D8B24C"/>
+    </g>
+  </defs>
+</svg>
+
+<div id="app">
+
+  <!-- LANDING PAGE -->
+  <section class="page active" id="page-landing">
+    <svg class="raven-bg" id="ravenDrift" width="90" height="60" viewBox="0 0 100 60" style="top:14%;"><use href="#ravenIcon" transform="scale(0.9)"/></svg>
+    <div class="logo-wrap">
+      <div class="logo-glow"></div>
+      <svg class="direwolf-svg" viewBox="0 0 100 100"><use href="#direwolfIcon"/></svg>
+    </div>
+    <h1 class="wordmark-main wordmark">HOUSE OF STARK</h1>
+    <p class="tagline">Winter is Coming... and so is the truth</p>
+    <button class="wax-btn seal-font" onclick="goTo('entry')">Begin Deciphering</button>
+  </section>
+
+  <!-- MESSAGE ENTRY PAGE -->
+  <section class="page" id="page-entry">
+    <div class="parchment-panel">
+      <h2 class="display">The Raven Arrives</h2>
+      <p class="info-tag">The Maester reads the secret in the first word's length.</p>
+      <textarea id="raven-input" placeholder="Paste the raven's message here..." oninput="quillSound()"></textarea>
+      <div class="error-msg" id="entry-error"></div>
+      <div class="entry-actions">
+        <button class="wax-btn seal-font" onclick="sendToMaester()">Send to Maester</button>
+      </div>
+    </div>
+    <svg class="bird" id="flyOffRaven" width="90" height="60" viewBox="0 0 100 60" style="top:40%;left:40%;"><use href="#ravenIcon"/></svg>
+  </section>
+
+  <!-- DECIPHERING PAGE -->
+  <section class="page" id="page-decipher">
+    <h2 class="display" style="text-align:center;margin-bottom:6px;">Deciphering the Message</h2>
+    <div class="sky-stage" id="skyStage">
+      <svg class="bird" id="mainRaven" width="180" height="120" viewBox="0 0 100 60"><use href="#ravenIcon"/></svg>
+      <div class="dragon" id="dragon">
+        <svg width="240" height="150" viewBox="0 0 300 150"><use href="#dragonIcon"/></svg>
+      </div>
+    </div>
+    <div class="progress-outer">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-label" id="progressLabel">0%</div>
+      <div class="flavor-text" id="flavorText">The wolf listens in silence.</div>
+    </div>
+  </section>
+
+  <!-- RESULT PAGE -->
+  <section class="page" id="page-result">
+    <div class="scroll-wrap">
+      <div class="scroll-panel">
+        <div class="wax-stamp seal-font" id="waxStamp">Sealed by<br>the Maester</div>
+        <h2 class="display" style="margin-top:0;">The Truth Revealed</h2>
+        <div class="decoded-text" id="decodedText"></div>
+      </div>
+      <p class="flavor-line" id="resultFlavor"></p>
+      <div class="result-actions">
+        <button class="parch-btn" onclick="copyResult()">Copy Result</button>
+        <button class="parch-btn" onclick="downloadResult()">Download as Scroll</button>
+        <button class="parch-btn" onclick="shareResult()">Send This Raven Onward</button>
+      </div>
+      <div style="text-align:center;">
+        <button class="wax-btn seal-font return-btn" onclick="goTo('landing')">Return to Winterfell</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<button class="icon-btn sound-toggle" id="soundBtn" onclick="toggleSound()">🔇 Sound Off</button>
+
+<div class="drawer-overlay" id="drawerOverlay" onclick="toggleHistory(false)"></div>
+<div class="history-drawer" id="historyDrawer">
+  <button class="icon-btn drawer-close" onclick="toggleHistory(false)">Close</button>
+  <h3 class="display">Ravens Received</h3>
+  <div id="historyList"></div>
+  <div class="history-count" id="historyCount">Messages deciphered: 0</div>
+</div>
+
+<script>
+/* ---------- STATE ---------- */
+let soundOn = false;
+let wallMode = false;
+let history_ = [];
+let counter = 0;
+let currentDecoded = "";
+let audioCtx = null;
+let droneNodes = null;
+
+/* ---------- NAV ---------- */
+function goTo(pageId){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+pageId).classList.add('active');
+  document.getElementById('topbar').classList.toggle('hidden', pageId==='landing');
+  if(pageId==='entry'){
+    document.getElementById('raven-input').value='';
+    document.getElementById('entry-error').textContent='';
+  }
+}
+
+/* ---------- CIPHER LOGIC ---------- */
+function getSecretNumber(text){
+  const firstWord = text.trim().split(/\s+/)[0] || '';
+  const letters = firstWord.replace(/[^a-zA-Z]/g,'');
+  return letters.length;
+}
+function caesarShiftBack(text, shift){
+  if(!shift) return text;
+  return text.replace(/[a-zA-Z]/g, c=>{
+    const base = (c === c.toUpperCase()) ? 65 : 97;
+    const code = ((c.charCodeAt(0) - base - shift) % 26 + 26) % 26 + base;
+    return String.fromCharCode(code);
+  });
+}
+
+/* ---------- ENTRY -> DECIPHER FLOW ---------- */
+function sendToMaester(){
+  const input = document.getElementById('raven-input').value;
+  const errEl = document.getElementById('entry-error');
+  if(!input.trim()){
+    errEl.textContent = "The scroll is blank — the Maester has nothing to read.";
+    return;
+  }
+  errEl.textContent = '';
+  const shift = getSecretNumber(input);
+  currentDecoded = caesarShiftBack(input, shift);
+
+  // raven fly-off transition
+  const raven = document.getElementById('flyOffRaven');
+  raven.style.transition = 'transform 1s cubic-bezier(.3,.6,.4,1), opacity 1s ease';
+  raven.style.opacity = '1';
+  requestAnimationFrame(()=>{
+    raven.style.transform = 'translate(120vw,-60vh) rotate(-25deg) scale(.6)';
+  });
+  playCaw();
+
+  setTimeout(()=>{
+    raven.style.transition='none';
+    raven.style.opacity='0';
+    raven.style.transform='none';
+    goTo('decipher');
+    runDecipherAnimation();
+  }, 950);
+}
+
+/* ---------- DECIPHER ANIMATION ---------- */
+const flavorLines = [
+  "The wolf listens in silence.",
+  "Ink dries; truth does not.",
+  "Beyond the Wall, secrets travel fast.",
+  "The Maester turns the page slowly.",
+  "Even ravens carry weight.",
+  "Winter tests every word."
+];
+
+function spawnSmallRaven(stage){
+  const svgNS = "http://www.w3.org/2000/svg";
+  const bird = document.createElementNS(svgNS,'svg');
+  bird.setAttribute('viewBox','0 0 100 60');
+  bird.classList.add('bird');
+  const size = 30 + Math.random()*40;
+  bird.setAttribute('width', size);
+  bird.setAttribute('height', size*0.6);
+  const use = document.createElementNS(svgNS,'use');
+  use.setAttributeNS('http://www.w3.org/1999/xlink','href','#ravenIcon');
+  use.setAttribute('href','#ravenIcon');
+  bird.appendChild(use);
+
+  const fromTop = Math.random() > 0.5;
+  const startY = fromTop ? (-10 - Math.random()*10) : (100 + Math.random()*10);
+  const endY = fromTop ? (30 + Math.random()*30) : (30 - Math.random()*30);
+  const duration = 2.2 + Math.random()*2;
+
+  bird.style.top = startY+'%';
+  bird.style.left = '-10%';
+  bird.style.opacity = '.75';
+  bird.style.transition = `transform ${duration}s linear, top ${duration}s ease-in-out`;
+  stage.appendChild(bird);
+
+  requestAnimationFrame(()=>{
+    bird.style.transform = `translateX(140vw) rotate(${fromTop?8:-8}deg)`;
+    bird.style.top = endY+'%';
+  });
+  setTimeout(()=> bird.remove(), duration*1000+200);
+}
+
+function runDecipherAnimation(){
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const flavor = document.getElementById('flavorText');
+  const dragon = document.getElementById('dragon');
+  const stage = document.getElementById('skyStage');
+  const mainRaven = document.getElementById('mainRaven');
+
+  fill.style.width = '0%';
+  label.textContent = '0%';
+  dragon.classList.remove('show');
+  mainRaven.style.opacity='0';
+
+  // main raven banked entrance
+  mainRaven.style.top='10%'; mainRaven.style.left='-15%';
+  mainRaven.style.transform='rotate(18deg)';
+  mainRaven.style.transition='none';
+  requestAnimationFrame(()=>{
+    mainRaven.style.transition='transform 2.4s ease-out, top 2.4s ease-out, opacity .6s ease';
+    mainRaven.style.opacity='1';
+    mainRaven.style.transform='translate(60vw,10vh) rotate(-10deg)';
+    mainRaven.style.top='6%';
+  });
+
+  let flavorIdx = 0;
+  flavor.textContent = flavorLines[0];
+  const flavorTimer = setInterval(()=>{
+    flavorIdx = (flavorIdx+1) % flavorLines.length;
+    flavor.textContent = flavorLines[flavorIdx];
+  }, 1400);
+
+  const smallBirdTimer = setInterval(()=> spawnSmallRaven(stage), 550);
+
+  let progress = 0;
+  const total = 4200;
+  const stepTime = 60;
+  const steps = total/stepTime;
+  const inc = 100/steps;
+
+  const interval = setInterval(()=>{
+    progress = Math.min(100, progress+inc);
+    fill.style.width = progress+'%';
+    label.textContent = Math.floor(progress)+'%';
+
+    if(progress >= 78 && !dragon.classList.contains('show')){
+      dragon.classList.add('show');
+      playDragon();
+    }
+    if(progress >= 100){
+      clearInterval(interval);
+      clearInterval(flavorTimer);
+      clearInterval(smallBirdTimer);
+      flavor.textContent = "The seal breaks.";
+      setTimeout(()=>{
+        showResult();
+      }, 700);
+    }
+  }, stepTime);
+}
+
+/* ---------- RESULT ---------- */
+function showResult(){
+  goTo('result');
+  const decodedEl = document.getElementById('decodedText');
+  const flavorEl = document.getElementById('resultFlavor');
+  const stamp = document.getElementById('waxStamp');
+  decodedEl.textContent = currentDecoded;
+  flavorEl.textContent = currentDecoded.length > 80 ? "The North Remembers." : "Brace yourself.";
+  stamp.classList.remove('show');
+  void stamp.offsetWidth;
+  setTimeout(()=> stamp.classList.add('show'), 350);
+
+  counter++;
+  history_.unshift(currentDecoded);
+  if(history_.length>5) history_.pop();
+  renderHistory();
+}
+
+function renderHistory(){
+  const list = document.getElementById('historyList');
+  const count = document.getElementById('historyCount');
+  list.innerHTML = '';
+  if(history_.length===0){
+    list.innerHTML = '<div class="history-item">No ravens received yet.</div>';
+  } else {
+    history_.forEach(msg=>{
+      const div = document.createElement('div');
+      div.className='history-item';
+      div.textContent = msg.length>140 ? msg.slice(0,140)+'…' : msg;
+      list.appendChild(div);
+    });
+  }
+  count.textContent = `Messages deciphered: ${counter}`;
+}
+
+function toggleHistory(open){
+  document.getElementById('historyDrawer').classList.toggle('open', open);
+  document.getElementById('drawerOverlay').classList.toggle('open', open);
+}
+
+/* ---------- RESULT ACTIONS ---------- */
+function copyResult(){
+  navigator.clipboard.writeText(currentDecoded).then(()=>{
+    flashButtonText(event.target, 'Copied!');
+  }).catch(()=>{ flashButtonText(event.target,'Copy failed'); });
+}
+function flashButtonText(btn, msg){
+  const original = btn.textContent;
+  btn.textContent = msg;
+  setTimeout(()=> btn.textContent = original, 1400);
+}
+function downloadResult(){
+  const canvas = document.createElement('canvas');
+  canvas.width = 800; canvas.height = 500;
+  const ctx = canvas.getContext('2d');
+  const grad = ctx.createLinearGradient(0,0,0,500);
+  grad.addColorStop(0,'#f3ead4'); grad.addColorStop(1,'#e6d8b8');
+  ctx.fillStyle = grad; ctx.fillRect(0,0,800,500);
+  ctx.strokeStyle = 'rgba(59,47,47,.35)'; ctx.lineWidth=6; ctx.strokeRect(14,14,772,472);
+  ctx.fillStyle = '#3B2F2F';
+  ctx.font = '600 24px Georgia'; ctx.textAlign='center';
+  ctx.fillText('House of Stark — Sealed by the Maester', 400, 60);
+  ctx.font = '20px Georgia'; ctx.textAlign='left';
+  wrapText(ctx, currentDecoded, 50, 120, 700, 30);
+  const link = document.createElement('a');
+  link.download = 'house-of-stark-scroll.png';
+  link.href = canvas.toDataURL();
+  link.click();
+}
+function wrapText(ctx, text, x, y, maxWidth, lineHeight){
+  const paragraphs = text.split('\n');
+  paragraphs.forEach(p=>{
+    const words = p.split(' ');
+    let line = '';
+    words.forEach(word=>{
+      const test = line + word + ' ';
+      if(ctx.measureText(test).width > maxWidth && line !== ''){
+        ctx.fillText(line, x, y); line = word + ' '; y += lineHeight;
+      } else { line = test; }
+    });
+    ctx.fillText(line, x, y); y += lineHeight;
+  });
+}
+function shareResult(){
+  if(navigator.share){
+    navigator.share({ title:'A raven from House of Stark', text: currentDecoded }).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(currentDecoded);
+    flashButtonText(event.target, 'Copied to send!');
+  }
+}
+
+/* ---------- SOUND (synthesized, muted by default) ---------- */
+function ensureAudio(){
+  if(!audioCtx){ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
+}
+function toggleSound(){
+  soundOn = !soundOn;
+  const btn = document.getElementById('soundBtn');
+  btn.textContent = soundOn ? '🔊 Sound On' : '🔇 Sound Off';
+  ensureAudio();
+  if(soundOn) startDrone(); else stopDrone();
+}
+function startDrone(){
+  if(droneNodes) return;
+  const o1 = audioCtx.createOscillator();
+  const o2 = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o1.type='sine'; o1.frequency.value=110;
+  o2.type='sine'; o2.frequency.value=164.8;
+  g.gain.value=0.02;
+  o1.connect(g); o2.connect(g); g.connect(audioCtx.destination);
+  o1.start(); o2.start();
+  droneNodes = {o1,o2,g};
+}
+function stopDrone(){
+  if(!droneNodes) return;
+  droneNodes.o1.stop(); droneNodes.o2.stop();
+  droneNodes = null;
+}
+function quillSound(){
+  if(!soundOn || !audioCtx) return;
+  const bufferSize = audioCtx.sampleRate*0.04;
+  const buffer = audioCtx.createBuffer(1,bufferSize,audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for(let i=0;i<bufferSize;i++){ data[i] = (Math.random()*2-1)*0.15; }
+  const src = audioCtx.createBufferSource();
+  src.buffer = buffer;
+  const g = audioCtx.createGain(); g.gain.value=0.3;
+  src.connect(g); g.connect(audioCtx.destination);
+  src.start();
+}
+function playCaw(){
+  if(!soundOn || !audioCtx) return;
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type='sawtooth'; o.frequency.setValueAtTime(320, audioCtx.currentTime);
+  o.frequency.exponentialRampToValueAtTime(140, audioCtx.currentTime+.25);
+  g.gain.setValueAtTime(.2, audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime+.3);
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start(); o.stop(audioCtx.currentTime+.3);
+}
+function playDragon(){
+  if(!soundOn || !audioCtx) return;
+  const bufferSize = audioCtx.sampleRate*0.6;
+  const buffer = audioCtx.createBuffer(1,bufferSize,audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for(let i=0;i<bufferSize;i++){ data[i]=(Math.random()*2-1)*Math.pow(1-i/bufferSize,1.5)*0.5; }
+  const src = audioCtx.createBufferSource(); src.buffer=buffer;
+  const filt = audioCtx.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=800;
+  src.connect(filt); filt.connect(audioCtx.destination);
+  src.start();
+}
+
+/* ---------- DARK MODE ---------- */
+function toggleWall(){
+  wallMode = !wallMode;
+  document.body.classList.toggle('wall', wallMode);
+}
+
+/* ---------- SNOW ---------- */
+const canvas = document.getElementById('snowCanvas');
+const ctx = canvas.getContext('2d');
+let flakes = [];
+function resizeCanvas(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+function initFlakes(){
+  const count = Math.floor((window.innerWidth*window.innerHeight)/18000);
+  flakes = Array.from({length: count}, ()=>({
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    r: Math.random()*2+0.6,
+    speed: Math.random()*0.6+0.25,
+    drift: Math.random()*0.5-0.25
+  }));
+}
+initFlakes();
+function drawSnow(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = 'rgba(245,247,250,0.85)';
+  flakes.forEach(f=>{
+    ctx.beginPath();
+    ctx.arc(f.x,f.y,f.r,0,Math.PI*2);
+    ctx.fill();
+    f.y += f.speed;
+    f.x += f.drift;
+    if(f.y > canvas.height){ f.y = -5; f.x = Math.random()*canvas.width; }
+  });
+  requestAnimationFrame(drawSnow);
+}
+drawSnow();
+
+/* ---------- BACKGROUND RAVEN DRIFT (landing) ---------- */
+(function driftRaven(){
+  const raven = document.getElementById('ravenDrift');
+  let x = -20;
+  function step(){
+    x += 0.035;
+    if(x>120) x=-20;
+    raven.style.transform = `translateX(${x}vw)`;
+    requestAnimationFrame(step);
+  }
+  step();
+})();
+
+/* init */
+renderHistory();
+</script>
+</body>
+</html>
